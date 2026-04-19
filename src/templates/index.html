@@ -1,0 +1,131 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- CSRF Token از سرور -->
+    <!-- <meta name="csrf-token" content="{{csrf_token}}" /> -->
+    <meta charset="UTF-8" />
+    <title>Mini Spotify</title>
+    <!-- <link rel="stylesheet" href="style.css" />
+    <link rel="shortcut icon" href="Spotifyico.jpg" type="image/x-icon" /> -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="shortcut icon" href="{% static 'icons/Spotify.jpg'%}" type="image/x-icon">
+<body>
+    <!-- سایدبار -->
+    <div class="sidebar">
+        <div class="logo">
+            <!-- <span class="logo-icon">🎵</span>
+            <span>Spotify</span> -->
+            <img src="{% static 'icons/info-spotify-2.png' %}" alt="ico" width="85%">
+        </div>
+
+        <nav class="nav-menu">
+            <a href="#" class="nav-item active" data-view="home">
+                <span class="nav-icon">🏠</span>
+                <span>Home</span>
+            </a>
+            <a href="#" class="nav-item" data-view="playlist">
+                <span class="nav-icon">📋</span>
+                <span>Playlist</span>
+            </a>
+        </nav>
+
+        <!-- بخش آپلود آهنگ -->
+        <div class="upload-section">
+            <h4>Upload Your Music!</h4>
+            
+            <!-- فرم فقط برای CSRF و فایل -->
+            <form id="uploadForm" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="file" id="miniUploadInput" name="file" accept="audio/*" />
+            </form>
+            
+            <!-- دکمه‌ها بیرون فرم (چون با JS کار میکنن) -->
+            <button id="selectFileBtn" class="select-file-btn">📂 Select Music</button>
+            <button id="uploadBtn" class="upload-btn">Upload</button>
+            
+            <!-- نام فایل -->
+            <p id="selectedFileName" class="selected-file-name"></p>
+            
+            <!-- پراگرس بار آپلود -->
+            <div id="uploadProgress" class="upload-progress">
+                <div id="uploadProgressBar" class="upload-progress-bar"></div>
+                <span id="uploadProgressText" class="upload-progress-text">0%</span>
+            </div>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="library-section">
+            <h3>Your Library</h3>
+            <div class="library-item" id="uploadedCount">
+                <span>📁</span>
+                <span>Uploaded Songs</span>
+                <span class="count-badge">0</span>
+            </div>
+        </div>
+    </div>
+    <!-- end sidebar -->
+
+    <!-- بخش اصلی -->
+    <div class="main-content">
+        <div class="header">
+            <h1 id="pageTitle">Home</h1>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search songs..." />
+            </div>
+        </div>
+
+        <!-- بخش Home -->
+        <div id="homeView" class="view-section">
+            <h2>Featured Songs</h2>
+            <div id="featuredList" class="song-grid"></div>
+        </div>
+
+        <!-- بخش Playlist -->
+        <div id="playlistView" class="view-section" style="display: none;">
+            <h2>Your Uploaded Songs</h2>
+            <div id="songList" class="song-list"></div>
+        </div>
+    </div>
+    <!-- end main-content -->
+
+    <!-- پلیر -->
+    <div class="player">
+        <div class="player-info">
+            <div class="now-playing">
+                <span class="playing-icon">🎵</span>
+                <span id="currentSong">Nothing is Playing... </span>
+            </div>
+        </div>
+
+        <div class="player-controls">
+            <button id="prevBtn" title="Previous">⏮</button>
+            <button id="playPauseBtn" title="Play">▶</button>
+            <button id="nextBtn" title="Next">⏭</button>
+        </div>
+
+        <div class="progress-section">
+            <span id="currentTime">0:00</span>
+            <div class="progress-container">
+                <input type="range" id="progressBar" min="0" max="100" value="0" />
+            </div>
+            <span id="duration">0:00</span>
+        </div>
+
+        <div class="player-right">
+            <div class="volume-control">
+                <span id="volumeIcon">🔊</span>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" />
+            </div>
+        </div>
+    </div>
+    <!-- end player -->
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- <script src="app.js"></script> -->
+    <script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>
