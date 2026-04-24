@@ -4,6 +4,7 @@ from django.http import HttpRequest
 from django.core.exceptions import ObjectDoesNotExist
 from .models import Music
 from .extentions import Serializer
+from tinytag import TinyTag
 
 import os
 
@@ -22,15 +23,37 @@ def new_music(request):
 
 def upload_music(request:HttpRequest):
     if request.method == "POST":
-        file = request.FILES['file']
+        try:
+            file = request.FILES['file']
+        except Exception as error:
+            return HttpResponse(error)
+        
+        file_name = file.name.split('.')[0]
         guid = os.urandom(3).hex() # this is uniq random URL
         format = file.name.split('.')[-1] # file extention
-        song = Music(name=file.name.split('.')[0],url=guid,format=format)
-        song.save()
-
+        
         with open(f'static/musics/{guid}.{format}','wb+') as buffer:
             for chunk in file.chunks():
                 buffer.write(chunk)
+
+        
+        saved_song = TinyTag.get(f'static/musics/{guid}.{format}',image=True)
+        cover = saved_song.images.front_cover
+
+        if cover:
+            with open(f'static/covers/{guid}.{cover.mime_type.split('/')[-1]}','wb+') as file:
+                file.write(cover.data)
+        
+        # NOTE: Check hasCover and isSingleTrack working well on database. (laptop)
+        song = Music(fileName=file_name,
+                     title=saved_song.title,
+                     artist=saved_song.artist,
+                     isSingleTrack=True if saved_song.album == None else False,
+                     album=saved_song.album,
+                     hasCover=True if cover != None else False,
+                     url=guid,
+                     format=format)
+        song.save()
 
         return HttpResponse('ok')
     
@@ -47,6 +70,8 @@ def get_music(request,music_id:int):
         with open(file_name, "rb") as f:
             while chunk := f.read(chunk_size):
                 yield chunk
+    
+    # NOTE: Add music cover to response
     response = StreamingHttpResponse(file_iterator(file_path))
     response["Content-Type"] = "audio/mpeg"
     return response
@@ -69,3 +94,5 @@ def delete_music(request,music_id:int):
         return HttpResponse('Music delete Successfully!')
     except FileNotFoundError:
         print(f"{music.url}.{music.format} Not found!")
+
+

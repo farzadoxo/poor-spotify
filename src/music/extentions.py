@@ -3,6 +3,12 @@ class Serializer:
     def music_serializer(songs:list):
             musics = {'songs':[]}
             for song in songs:
-                musics['songs'].append({'id':song.id,'name':song.name})
+                musics['songs'].append({'id':song.id,
+                                        'title':song.title,
+                                        'artist':song.artist,
+                                        'isSingleTrack':song.isSingleTrack,
+                                        'album':song.album,
+                                        'hasCover':song.hasCover,
+                                        'uploader':song.uploader})
 
             return musics
