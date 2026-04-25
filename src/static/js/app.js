@@ -253,7 +253,7 @@ function renderFeatured() {
         const card = document.createElement('div');
         card.classList.add('song-card');
         card.innerHTML = `
-            <div class="album-art">🎵</div>
+            <div class="album-art"><img src=static/covers/${song.url}.${song.coverFormat} width=100%></div>
             <div class="song-title">${getSongName(song)}</div>
             <div class="song-artist">${isFeatured ? 'Featured' : 'Uploaded'}</div>
         `;
