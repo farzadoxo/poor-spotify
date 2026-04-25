@@ -9,6 +9,7 @@ class Music(models.Model):
     isSingleTrack = models.BooleanField(null=False,default=None)
     album = models.CharField(max_length=30,null=True)
     hasCover = models.BooleanField(default=True,null=False)
+    coverFormat = models.CharField(max_length=5,null=True)
     url = models.CharField(max_length=10,unique=True)
     format = models.CharField(max_length=5)
     uploader = models.CharField(max_length=30)

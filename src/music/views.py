@@ -39,6 +39,7 @@ def upload_music(request:HttpRequest):
         
         saved_song = TinyTag.get(f'static/musics/{guid}.{format}',image=True)
         cover = saved_song.images.front_cover
+        cover_format = saved_song.images.front_cover.mime_type.split('/')[-1]
 
         if cover:
             with open(f'static/covers/{guid}.{cover.mime_type.split('/')[-1]}','wb+') as file:
@@ -51,6 +52,7 @@ def upload_music(request:HttpRequest):
                      isSingleTrack=True if saved_song.album == None else False,
                      album=saved_song.album,
                      hasCover=True if cover != None else False,
+                     coverFormat=cover_format,
                      url=guid,
                      format=format)
         song.save()

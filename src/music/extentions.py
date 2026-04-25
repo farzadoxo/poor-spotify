@@ -9,6 +9,8 @@ class Serializer:
                                         'isSingleTrack':song.isSingleTrack,
                                         'album':song.album,
                                         'hasCover':song.hasCover,
-                                        'uploader':song.uploader})
+                                        'coverFormat':song.coverFormat,
+                                        'uploader':song.uploader,
+                                        'url':song.url})
 
             return musics
