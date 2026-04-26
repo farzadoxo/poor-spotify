@@ -39,11 +39,12 @@ def upload_music(request:HttpRequest):
         
         saved_song = TinyTag.get(f'static/musics/{guid}.{format}',image=True)
         cover = saved_song.images.front_cover
-        cover_format = saved_song.images.front_cover.mime_type.split('/')[-1]
+        
 
         if cover:
-            with open(f'static/covers/{guid}.{cover.mime_type.split('/')[-1]}','wb+') as file:
-                file.write(cover.data)
+            cover_format = cover.mime_type.split('/')[-1]
+            with open(f'static/covers/{guid}.{cover_format}','wb+') as buffer:
+                buffer.write(cover.data)
         
         # NOTE: Check hasCover and isSingleTrack working well on database. (laptop)
         song = Music(fileName=file_name,
@@ -52,7 +53,7 @@ def upload_music(request:HttpRequest):
                      isSingleTrack=True if saved_song.album == None else False,
                      album=saved_song.album,
                      hasCover=True if cover != None else False,
-                     coverFormat=cover_format,
+                     coverFormat=cover_format if cover != None else None,
                      url=guid,
                      format=format)
         song.save()
