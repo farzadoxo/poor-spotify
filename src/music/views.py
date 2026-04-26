@@ -10,6 +10,8 @@ import os
 
 
 
+
+
 def get_all_music(request):
     songs = Music.objects.all()
     musics = Serializer.music_serializer(songs)
@@ -17,8 +19,7 @@ def get_all_music(request):
     return JsonResponse(musics)
 
 
-def new_music(request):
-    return render(request,'upload.html')
+
 
 
 def upload_music(request:HttpRequest):
@@ -59,6 +60,8 @@ def upload_music(request:HttpRequest):
         song.save()
 
         return HttpResponse('ok')
+    
+
     
 
 def get_music(request,music_id:int):
