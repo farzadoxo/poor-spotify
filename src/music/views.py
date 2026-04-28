@@ -2,14 +2,16 @@ from django.shortcuts import render
 from django.http import JsonResponse , HttpResponse , StreamingHttpResponse
 from django.http import HttpRequest
 from django.core.exceptions import ObjectDoesNotExist
-from .models import Music
+from .models import Music 
 from .extentions import Serializer
 from tinytag import TinyTag
 
 import os
 
 
-
+# dirs 
+music_dir = 'static/musics'
+cover_dir = 'static/covers'
 
 
 def get_all_music(request):
@@ -29,37 +31,43 @@ def upload_music(request:HttpRequest):
         except Exception as error:
             return HttpResponse(error)
         
-        file_name = file.name.split('.')[0]
+
         guid = os.urandom(3).hex() # this is uniq random URL
         format = file.name.split('.')[-1] # file extention
         
-        with open(f'static/musics/{guid}.{format}','wb+') as buffer:
+        os.makedirs(music_dir,exist_ok=True)
+        with open(f'{music_dir}/{guid}.{format}','wb+') as buffer:
             for chunk in file.chunks():
                 buffer.write(chunk)
 
-        
+        # get metadata from saved song file
         saved_song = TinyTag.get(f'static/musics/{guid}.{format}',image=True)
-        cover = saved_song.images.front_cover
+        metadata = {'filename':saved_song.filename,
+                    'title':saved_song.title,
+                    'artist':saved_song.artist,
+                    'album':saved_song.album,
+                    'cover':saved_song.images.front_cover}
+
+
+        if metadata['cover']:
+            cover_format = metadata['cover'].mime_type.split('/')[-1]
+            os.makedirs(cover_dir,exist_ok=True)
+            with open(f'{cover_dir}/{guid}.{cover_format}','wb+') as buffer:
+                buffer.write(metadata['cover'].data)
         
 
-        if cover:
-            cover_format = cover.mime_type.split('/')[-1]
-            with open(f'static/covers/{guid}.{cover_format}','wb+') as buffer:
-                buffer.write(cover.data)
-        
-        # NOTE: Check hasCover and isSingleTrack working well on database. (laptop)
-        song = Music(fileName=file_name,
-                     title=saved_song.title,
-                     artist=saved_song.artist,
-                     isSingleTrack=True if saved_song.album == None else False,
-                     album=saved_song.album,
-                     hasCover=True if cover != None else False,
-                     coverFormat=cover_format if cover != None else None,
+        song = Music(fileName=metadata['filename'],
+                     title=metadata['title'],
+                     artist=metadata['artist'] ,
+                     isSingleTrack=True if metadata['album'] == None else False,
+                     album=metadata['album'],
+                     hasCover=True if metadata['cover'] != None else False,
+                     coverFormat=cover_format if metadata['cover'] != None else None,
                      url=guid,
                      format=format)
         song.save()
 
-        return HttpResponse('ok')
+        return HttpResponse('Ok')
     
 
     
@@ -77,7 +85,7 @@ def get_music(request,music_id:int):
             while chunk := f.read(chunk_size):
                 yield chunk
     
-    # NOTE: Add music cover to response
+
     response = StreamingHttpResponse(file_iterator(file_path))
     response["Content-Type"] = "audio/mpeg"
     return response
