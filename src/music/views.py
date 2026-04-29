@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.http import JsonResponse , HttpResponse , StreamingHttpResponse
 from django.http import HttpRequest
 from django.core.exceptions import ObjectDoesNotExist
-from .models import Music 
-from .extentions import Serializer
+from .models import Music
+from extentions.serializers import Serializer
 from tinytag import TinyTag
 
 import os
@@ -108,5 +108,6 @@ def delete_music(request,music_id:int):
         return HttpResponse('Music delete Successfully!')
     except FileNotFoundError:
         print(f"{music.url}.{music.format} Not found!")
+
 
 
