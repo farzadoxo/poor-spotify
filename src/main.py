@@ -7,7 +7,7 @@ HOST = os.getenv('IP')
 PORT = os.getenv('PORT')
 
 # command attribute
-apps = ['music']
+apps = ['music','playlist']
 BASE_COMMAND = 'python3 manage.py'
 
 
