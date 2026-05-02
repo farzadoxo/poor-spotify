@@ -3,7 +3,7 @@ import dotenv
 
 # load ip and port from .env 
 dotenv.load_dotenv()
-HOST = os.getenv('IP')
+HOST = os.getenv('HOST')
 PORT = os.getenv('PORT')
 
 # command attribute
