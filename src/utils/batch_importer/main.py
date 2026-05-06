@@ -1,4 +1,4 @@
-from utils.batch_importer.init import main
+from .init import main
 
 
 if __name__ == "__main__":
