@@ -13,9 +13,10 @@ def get_all_playlist(request):
 
 
 
-def new_playlist(request,playlist:Playlist):
-    obj = Playlist(playlist).save()
-    return HttpResponse('Ok')
+def new_playlist(request,playlist_name):
+    if request.method == "POST":
+        obj = Playlist(name=playlist_name).save()
+        return HttpResponse('Ok')
 
 
 
