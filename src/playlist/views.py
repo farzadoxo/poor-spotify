@@ -15,7 +15,8 @@ def get_all_playlist(request):
 
 def new_playlist(request,playlist_name):
     if request.method == "POST":
-        obj = Playlist(name=playlist_name).save()
+        obj = Playlist(name=playlist_name)
+        obj.save()
         return HttpResponse('Ok')
 
 
@@ -40,3 +41,31 @@ def get_playlist(request,playlist_id:int):
 
     response = Serializer.playlist_music_serializer(pl=playlist,musics=playlist.musics.all())
     return JsonResponse(response)
+
+
+
+def delete_playlist(request,playlist_id):
+    try:
+        pl=Playlist.objects.get(id=playlist_id)
+    except ObjectDoesNotExist:
+        return HttpResponse("Playlist not found!")
+    
+    all_song = pl.musics.all()
+    for song in all_song:
+        pl.musics.remove(song)
+
+    pl.delete()
+    
+    return HttpResponse("Ok")
+
+
+
+def remove_music_from_playlist(requesr,playlist_id:int,music_id:int):
+    try:
+        pl = Playlist.objects.get(id=playlist_id)
+        song = Music.objects.get(id=music_id)
+    except ObjectDoesNotExist:
+        return HttpResponse("Song or Playlist not found!")
+    
+    pl.musics.remove(song)
+    return HttpResponse("Ok")
