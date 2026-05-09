@@ -5,13 +5,14 @@ from django.core.exceptions import ObjectDoesNotExist
 from .models import Music
 from extentions.serializers import Serializer
 from tinytag import TinyTag
+from  poor_spotify.settings import MEDIA_ROOT
 
 import os
 
 
 # dirs 
-music_dir = 'static/musics'
-cover_dir = 'static/covers'
+music_dir = MEDIA_ROOT / 'musics'
+cover_dir = MEDIA_ROOT / 'covers'
 
 
 def get_all_music(request):
@@ -41,7 +42,7 @@ def upload_music(request:HttpRequest):
                 buffer.write(chunk)
 
         # get metadata from saved song file
-        saved_song = TinyTag.get(f'static/musics/{guid}.{format}',image=True)
+        saved_song = TinyTag.get(f'{music_dir}/{guid}.{format}',image=True)
         metadata = {'filename':saved_song.filename,
                     'title':saved_song.title,
                     'artist':saved_song.artist,
@@ -78,7 +79,7 @@ def get_music(request,music_id:int):
     except ObjectDoesNotExist:
         return HttpResponse("Music Not found!")
     
-    file_path = f"static/musics/{music.url}.{music.format}"
+    file_path = f"{music_dir}/{music.url}.{music.format}"
 
     def file_iterator(file_name, chunk_size=1000):
         with open(file_name, "rb") as f:
@@ -103,9 +104,14 @@ def delete_music(request,music_id:int):
     
     try:
         music.delete() # delete music from db
-        os.remove(f'static/musics/{music.url}.{music.format}')
+        os.remove(f'{music_dir}/{music.url}.{music.format}')
+        try:
+            os.remove(f'{cover_dir}/{music.url}.{music.coverFormat}')
+        except FileNotFoundError:
+            pass
 
         return HttpResponse('Music delete Successfully!')
+    
     except FileNotFoundError:
         print(f"{music.url}.{music.format} Not found!")
 
