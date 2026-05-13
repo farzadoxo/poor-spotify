@@ -1,4 +1,7 @@
-from django.shortcuts import render
 
-def home(request):
-    return render(request,'index.html')
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.http import JsonResponse
+
+@ensure_csrf_cookie
+def csrf_view(request):
+    return JsonResponse({'detail': 'CSRF cookie set'})
