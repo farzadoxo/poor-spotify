@@ -18,7 +18,9 @@ def main():
     os.system(f'{BASE_COMMAND} migrate')
 
     os.system(f'{BASE_COMMAND} collectstatic')
-    os.system(f'{BASE_COMMAND} runserver {HOST}:{PORT}')
+    # os.system(f'{BASE_COMMAND} runserver {HOST}:{PORT}')
+
+    os.system(f'gunicorn --bind {HOST}:{PORT} poor_spotify.wsgi:application')
 
 
 
