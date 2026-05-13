@@ -8,15 +8,15 @@
     <title>Mini Spotify</title>
     <!-- <link rel="stylesheet" href="style.css" />
     <link rel="shortcut icon" href="Spotifyico.jpg" type="image/x-icon" /> -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="shortcut icon" href="{% static 'icons/Spotify.jpg'%}" type="image/x-icon">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="shortcut icon" href="icons/Spotify.jpg" type="image/x-icon">
 <body>
     <!-- سایدبار -->
     <div class="sidebar">
         <div class="logo">
             <!-- <span class="logo-icon">🎵</span>
             <span>Spotify</span> -->
-            <img src="{% static 'icons/info-spotify-2.png' %}" alt="ico" width="85%">
+            <img src="icons/info-spotify-2.png" alt="ico" width="85%">
         </div>
 
         <nav class="nav-menu">
@@ -36,7 +36,8 @@
             
             <!-- فرم فقط برای CSRF و فایل -->
             <form id="uploadForm" enctype="multipart/form-data">
-                {% csrf_token %}
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
                 <input type="file" id="miniUploadInput" name="file" accept="audio/*" />
             </form>
             
@@ -126,6 +127,6 @@
     <div id="toast" class="toast"></div>
 
     <!-- <script src="app.js"></script> -->
-    <script src="{% static 'js/app.js' %}"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
