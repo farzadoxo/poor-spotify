@@ -24,10 +24,12 @@ TEMPLATE_DIR = BASE_DIR / 'static' / 'templates'
 SECRET_KEY = 'django-insecure-w8adq%-)ys%bb^@$b26w0%-fw)comtuoy1+%hg0#y8^343to28'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False 
+DEBUG = True 
 
 ALLOWED_HOSTS = [
-    '*'
+    '*',
+    'localhost',
+    '127.0.0.1'
 ]
 
 
@@ -134,3 +136,9 @@ MEDIA_ROOT = BASE_DIR / 'media/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+]
