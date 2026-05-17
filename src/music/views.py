@@ -114,6 +114,3 @@ def delete_music(request,music_id:int):
     
     except FileNotFoundError:
         print(f"{music.url}.{music.format} Not found!")
-
-
-
