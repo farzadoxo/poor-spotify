@@ -9,3 +9,4 @@ migrations
 *.png
 static/
 media/
+/static
