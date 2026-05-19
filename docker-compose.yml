@@ -1,32 +1,36 @@
 
-
-# env_file: 
-#     - src/.env
-
-
 services:
 
     db:
         image: mysql:latest
         container_name: mysql_db
-        restart: always
+        restart: unless-stopped
         environment:
             MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS}
-            MYSQL_DATABASE: ${DB_NAME}
-            MYSQL_USER: ${DB_USER}
-            MYSQL_PASSWORD: ${DB_PASS}
+            MYSQL_DATABASE: ${DB_NAME}      
+            MYSQL_USER: ${DB_USER}          
+            MYSQL_PASSWORD: ${DB_PASS}      
         
         volumes:
             - db_data:/var/lib/mysql
-
+        
+        healthcheck:
+           
+            
+            test: ["CMD-SHELL", "mysqladmin ping -h localhost -u ${DB_USER} -p${DB_PASS} --silent"]
+            interval: 10s  
+            timeout: 5s    
+            retries: 5    
+            start_period: 30s 
 
     api:
         build: .
         container_name: api
         restart: always
-
+        
         depends_on: 
-            - db
+            db:
+                condition: service_healthy
         volumes:
             - ./src:/src
         expose:
@@ -38,11 +42,14 @@ services:
         restart: always
         ports:
             - "80:80"
+        
         depends_on: 
-            - api
+            api:
+                condition: service_started 
         volumes:
             - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
             - ./src/front-end:/usr/share/nginx/html:ro
+            - ./src/media:/src/media:ro 
 
 volumes:
   db_data:
