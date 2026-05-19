@@ -249,7 +249,7 @@ function renderFeatured() {
         card.innerHTML = `
             <div class="album-art">
                 <img 
-                    src="media/${song.url}.${song.coverFormat}" 
+                    src="/pic/${song.url}.${song.coverFormat}" 
                     width="100%"
                     onerror="this.onerror=null; this.parentElement.innerHTML='🎵';"
                 >

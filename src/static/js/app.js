@@ -35,9 +35,10 @@ const elements = {
 // CSRF Handler
 // ============================================
 function getCsrfToken() {
-    const input = document.querySelector('[name="csrfmiddlewaretoken"]');
-    return input ? input.value : '';
+    const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
+    return match ? decodeURIComponent(match[1]) : null;
 }
+
 
 // ============================================
 // State Variables
@@ -114,7 +115,7 @@ async function fetchAllSongs() {
     state.isLoading = true;
 
     try {
-        const response = await fetch('/music/all', {
+        const response = await fetch('/api/music/all', {
             credentials: 'include',
             headers: { 'CSRF-Token': getCsrfToken() }
         });
@@ -147,12 +148,10 @@ function uploadSong(file) {
         const formData = new FormData();
         formData.append('file', file);
 
-        elements.uploadProgress.classList.add('show');
-        elements.uploadProgressBar.style.width = '0%';
-        elements.uploadProgressText.textContent = '0%';
-
         const xhr = new XMLHttpRequest();
         const csrfToken = getCsrfToken();
+
+        console.log('CSRF TOKEN:', csrfToken); // برای تست
 
         xhr.upload.addEventListener('progress', (e) => {
             if (e.lengthComputable) {
@@ -163,39 +162,34 @@ function uploadSong(file) {
         });
 
         xhr.addEventListener('load', () => {
+            console.log('STATUS:', xhr.status);
+            console.log('RESPONSE:', xhr.responseText);
+
             if (xhr.status >= 200 && xhr.status < 300) {
-                elements.uploadProgressBar.style.width = '100%';
-                elements.uploadProgressText.textContent = '100%';
-
-                setTimeout(() => {
-                    elements.uploadProgress.classList.remove('show');
-                    elements.uploadProgressBar.style.width = '0%';
-                }, 500);
-
-                showToast('آهنگ با موفقیت آپلود شد!', 'success');
-                fetchAllSongs();
-                resolve(xhr.response);
-
+                resolve(xhr.responseText);
             } else {
-                elements.uploadProgress.classList.remove('show');
-                showToast('خطا در آپلود فایل!', 'error');
-                reject(new Error('خطا در آپلود'));
+                reject(new Error(xhr.responseText || 'Upload failed'));
             }
         });
 
         xhr.addEventListener('error', () => {
-            elements.uploadProgress.classList.remove('show');
-            showToast('خطا در آپلود فایل!', 'error');
-            reject(new Error('خطا در شبکه'));
+            reject(new Error('Network error'));
         });
 
-        xhr.open('POST', '/music/upload');
-        if (csrfToken) xhr.setRequestHeader('X-CSRFToken', csrfToken);
-        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.open('POST', '/api/music/upload');
         xhr.withCredentials = true;
+
+        if (csrfToken) {
+            xhr.setRequestHeader('X-CSRFToken', csrfToken);
+        } else {
+            console.warn('No CSRF token found in cookies!');
+        }
+
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhr.send(formData);
     });
 }
+
 
 // ============================================
 // Upload Event Handlers
@@ -255,7 +249,7 @@ function renderFeatured() {
         card.innerHTML = `
             <div class="album-art">
                 <img 
-                    src="static/covers/${song.url}.${song.coverFormat}" 
+                    src="/pic/${song.url}.${song.coverFormat}" 
                     width="100%"
                     onerror="this.onerror=null; this.parentElement.innerHTML='🎵';"
                 >
@@ -343,7 +337,7 @@ function loadSong(index) {
         return;
     }
 
-    audio.src = `/music/listen/${songId}`;
+    audio.src = `api/music/listen/${songId}`;
     updateSongDisplay();
     updateListHighlight();
 }
@@ -478,6 +472,10 @@ audio.addEventListener('error', () => {
 // Initialization
 // ============================================
 document.addEventListener('DOMContentLoaded', async () => {
+    fetch('/api/csrf/', {
+        credentials: 'include'
+    });
+
     showLoading();
 
     try {
