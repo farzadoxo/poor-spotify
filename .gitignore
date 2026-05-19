@@ -10,3 +10,4 @@ migrations
 static/
 media/
 /static
+/media
