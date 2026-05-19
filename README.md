@@ -31,9 +31,11 @@ DB_ROOT_PASS = '$password'
 ```
 `⚠️ If you want to set another values for environment vars, you should also set it for nginx.conf file! `
 
+**Note:** *Set you volumes for media and database at `docker-compose.yml`*
+
 4. `cd` to root directory of repo (`poor-spotify`) and run command below:
 ```bash
-$~ sudo docker compose up
+$~ sudo docker compose --env-file src/.env up
 ```
 `Wait for pulling images and run container!`
 
