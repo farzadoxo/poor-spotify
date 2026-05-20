@@ -12,7 +12,6 @@ Just upload a mp3 file and everything is getting ready to enjoy listening 🫠
 - Add a batch of music [utils](https://github.com/farzadoxo/poor-spotify/tree/master/src/utils)
 ## How to use:
 
-### Docker:
 1. Clone this repository.
 2. Install [docker](https://docker.com) and [docker compose](https://docs.docker.com/compose/).
 3. Rename `sample.env` in `src/` directory to `.env` and fill it with your data like:
@@ -51,3 +50,6 @@ $~ curl http://127.0.0.1
 - Music file will saved in `static/musics/`
 - Music cover file will saved in `static/covers/`
 - Playlist mechanism front-end is not ready but backend is ready. if you can help, tell me :) 
+
+
+<a href="https://www.coffeebede.com/farzadoxo"><img class="img-fluid" src="https://github.com/farzadoxo/farzadoxo/blob/master/CoffeBede.svg" width=30%/></a>
